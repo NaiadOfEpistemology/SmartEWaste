@@ -1,15 +1,15 @@
-:root {
-  --cream: #FBF5F3;
-  --orange: #E28413;
-  --navy: #000022;
-  --red: #DE3C4B;
-  --pink: #C42847;
-  --white: #FFFFFF;
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;  
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--cream);
+  background: var(--bg1);
+  font-family: var(--font-main);
   color: var(--white);
 }

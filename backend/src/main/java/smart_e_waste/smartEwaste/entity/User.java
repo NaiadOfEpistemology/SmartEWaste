@@ -13,4 +13,9 @@ public class User {
     private String email;
     private String password;
     private String fullName;
+    private boolean verified=false;
+    private String verificationCode;
+    private String profilePhoto;
+    private String phone;
+    private Role role=Role.USER;
 }

@@ -3,42 +3,25 @@ import { useState } from "react"
 import axios from "../api"
 import { Link, useNavigate } from "react-router-dom"
 
-export default function Login() {
+export default function ForgotPassword() {
   const nav = useNavigate()
 
   const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [tagline, setTagline] = useState("Login to access your dashboard.")
-  const [showPassword, setShowPassword] = useState(false)
+  const [success, setSuccess] = useState("")
   const [shake, setShake] = useState(false)
 
-  const updateTagline = (val) => {
-    const trimmed = val.trim()
-    if (trimmed.length > 0) {
-      const first = trimmed.split("@")[0]
-      setTagline(`Welcome back, ${first}`)
-    } else {
-      setTagline("Login to access your dashboard.")
-    }
-  }
-
-  const login = async (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     setShake(false)
     try {
-      const res = await axios.post("/auth/login", { email, password })
-      const { token, role } = res.data
-      localStorage.setItem("token", token)
-      localStorage.setItem("email", email)
-      localStorage.setItem("role", role)
-      nav(role === "ADMIN" ? "/admin" : "/dashboard")
-    } catch (err) {
-      setError(
-        err.response?.data === "UNVERIFIED"
-          ? "Please verify your email first."
-          : "Invalid credentials"
-      )
+      await axios.post("/auth/forgot-password", { email })
+      setSuccess("OTP has been sent to your email.")
+      setError("")
+      setTimeout(() => nav("/forgot-verify", { state: { email } }), 1500)
+    } catch {
+      setError("Email not found")
+      setSuccess("")
       setShake(true)
       setTimeout(() => setShake(false), 400)
     }
@@ -62,64 +45,32 @@ export default function Login() {
 
       <div style={styles.centerPanel}>
         <div style={styles.card} className={shake ? "shake-card" : ""}>
-          <h2 style={styles.cardTitle}>Login</h2>
-          <p style={styles.tagline}>{tagline}</p>
+          <h2 style={styles.cardTitle}>Forgot Password</h2>
+          <p style={styles.tagline}>
+            Enter your registered email to receive an OTP.
+          </p>
 
+          {success && <p style={styles.success}>{success}</p>}
           {error && <p style={styles.error}>{error}</p>}
 
-          <form onSubmit={login} style={styles.form}>
+          <form onSubmit={submit} style={styles.form}>
             <input
               style={styles.input}
               type="email"
               placeholder="Email"
               value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                updateTagline(e.target.value)
-              }}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
 
-<div style={styles.passwordWrapper}>
-  <input
-    style={styles.passwordInput}
-    type={showPassword ? "text" : "password"}
-    placeholder="Password"
-    value={password}
-    onChange={(e) => setPassword(e.target.value)}
-    required
-  />
-
-  <span
-    onClick={() => setShowPassword(!showPassword)}
-    style={styles.eyeIcon}
-  >
-    {showPassword ? (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M22 12S19 18 12 18 2 12 2 12s3-6 10-6 10 6 10 6z" />
-        <circle cx="12" cy="12" r="3" />
-        <path d="M3 21L20 4" />
-      </svg>
-    ) : (
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 5C4.367 5 1 12 1 12s3.367 7 11 7 11-7 11-7-3.367-7-11-7zm0 12a5 5 0 110-10 5 5 0 010 10z" />
-      </svg>
-    )}
-  </span>
-</div>
-            <button style={styles.button} type="submit">
-              Login
+<button style={styles.button} type="submit">
+              Send OTP
             </button>
           </form>
 
           <p style={styles.switch}>
-            No account?
-            <Link style={styles.link} to="/register"> Register</Link>
-          </p>
-
-          <p style={styles.switch}>
-            Forgot Password?
-            <Link style={styles.link} to="/forgot-password"> Reset Here</Link>
+            Remembered your password?
+            <Link to="/login" style={styles.link}> Login</Link>
           </p>
         </div>
       </div>
@@ -200,8 +151,7 @@ const styles = {
   tagline: {
     fontSize: "14px",
     opacity: 0.85,
-    marginBottom: "20px",
-    minHeight: "20px"
+    marginBottom: "20px"
   },
 
   form: {
@@ -209,19 +159,6 @@ const styles = {
     flexDirection: "column",
     gap: "15px"
   },
-
-passwordInput: {
-  padding: "12px 42px 12px 14px",
-  borderRadius: "10px",
-  border: "1px solid rgba(255,255,255,0.35)",
-  background: "rgba(8,8,20,0.75)",
-  color: "#fff",
-  fontSize: "15px",
-  outline: "none",
-  width: "100%",
-  boxSizing: "border-box"
-},
-
 
   input: {
     padding: "12px 14px",
@@ -235,28 +172,6 @@ passwordInput: {
     maxWidth: "260px",
     margin: "0 auto",
     display: "block"
-  },
-
-  passwordWrapper: {
-    position: "relative",
-    width: "100%",
-    maxWidth: "260px",
-    margin: "0 auto"
-  },
-
-  eyeIcon: {
-    position: "absolute",
-    right: "12px",
-    top: "50%",
-    transform: "translateY(-50%)",
-    cursor: "pointer",
-    opacity: 0.85,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "26px",
-    width: "26px",
-    zIndex: 5
   },
 
   button: {
@@ -285,6 +200,11 @@ passwordInput: {
 
   error: {
     color: "#ff6b6b",
+    marginBottom: "10px"
+  },
+
+  success: {
+    color: "#00ff99",
     marginBottom: "10px"
   },
 
