@@ -179,11 +179,14 @@ export default function ProfileSidebar({open,onClose,email,refreshProfile}) {
 
       <div style={styles.section}>
         <div style={{opacity:.7,fontSize:13}}>Phone</div>
-        <input 
-          style={styles.input}
-          value={profile.phone||""}
-          onChange={e=>setProfile({...profile,phone:e.target.value})}
-        />
+        <input style={styles.input}
+  className="input"
+  value={profile.phone||""}
+  onChange={e=>{
+    const v=e.target.value.replace(/\D/g,"")
+    if(v.length<=10) setProfile({...profile,phone:v})
+  }}
+/>
       </div>
 
       <button style={styles.btn} onClick={save} disabled={saving}>
