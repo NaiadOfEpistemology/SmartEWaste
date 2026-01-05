@@ -13,18 +13,18 @@ export default function PersonnelDashboard() {
   const navigate=useNavigate();
   const [sidebarOpen, setSidebarOpen]=useState(false);
 
-  // ================= Load requests =================
+  
   useEffect(() => {
     if (!email) return;
   
     setLoading(true);
   
-    // Accepted
+
     api.get("/auth/personnel/requests", { params: { email } })
       .then(res => setAccepted(res.data || []))
       .catch(() => setAccepted([]));
   
-    // Completed
+   
     api.get("/personnel/completed", { params: { personnelEmail: email } })
       .then(res => setCompleted(res.data || []))
       .catch(() => setCompleted([]))
@@ -33,7 +33,6 @@ export default function PersonnelDashboard() {
   }, [email]);
   
 
-  // ================= Pickup =================
   const markPickedUp = async (req) => {
     try {
       await api.post(
@@ -42,7 +41,6 @@ export default function PersonnelDashboard() {
         { params: { personnelEmail: email } }
       );
 
-      // Move request from accepted → completed (UI only)
       setAccepted(prev => prev.filter(r => r.id !== req.id));
       setCompleted(prev => [
         { ...req, status: "PICKED_UP" },
@@ -59,7 +57,6 @@ export default function PersonnelDashboard() {
 
   return (
     <div style={st.page}>
-      {/* ================= Header ================= */}
       <div style={st.header}>
   <div>
     <div style={st.title}>Personnel Dashboard</div>
@@ -97,13 +94,11 @@ export default function PersonnelDashboard() {
 </div>
 
 
-      {/* ================= Stat Cards ================= */}
       <div style={st.statsRow}>
         <StatCard label="Accepted Requests" value={accepted.length} />
         <StatCard label="Completed Requests" value={completed.length} />
       </div>
 
-      {/* ================= Accepted ================= */}
       <Section title="Accepted Requests">
         {accepted.length ? (
           accepted.map(r => (
@@ -118,7 +113,6 @@ export default function PersonnelDashboard() {
         )}
       </Section>
 
-      {/* ================= Completed ================= */}
       <Section title="Completed Requests">
         {completed.length ? (
           completed.map(r => <RequestCard key={r.id} r={r} completed />)
@@ -129,8 +123,6 @@ export default function PersonnelDashboard() {
     </div>
   );
 }
-
-/* ================= Reusable UI ================= */
 
 function StatCard({ label, value }) {
   return (
@@ -192,7 +184,6 @@ function RequestCard({ r, onPickup, completed }) {
   );
 }
 
-/* ================= Styles ================= */
 
 const st = {
   page: {

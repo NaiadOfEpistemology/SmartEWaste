@@ -6,8 +6,8 @@ import smart_e_waste.smartEwaste.entity.EwasteAudit;
 
 @Repository
 public interface EwasteAuditRepository extends JpaRepository<EwasteAudit, Long> {
+    
     List<EwasteAudit> findByEmailOrderByDateDesc(String email);
     List<EwasteAudit> findByStatus(String status);
-
-    List<EwasteAudit> findByPickupPersonnelOrderByDateDesc(String pickupPersonnel);
+    List<EwasteAudit> findByPickupPersonnelIdOrderByDateDesc(Long pickupPersonnelId);
 }

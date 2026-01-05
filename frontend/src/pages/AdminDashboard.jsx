@@ -42,6 +42,17 @@ const [newName, setNewName] = useState("");
 
 
   const navigate = useNavigate();
+  const deletePersonnel = async (id) => {
+    if (!window.confirm("Delete this personnel?")) return;
+    try {
+      await api.delete(`/personnel/${id}`);
+      setPersonnelList(prev => prev.filter(p => p.id !== id));
+      showToast("Personnel deleted");
+    } catch (err) {
+      showToast(err.response?.data || "Delete failed");
+    }
+  };
+  
 
   const showToast = (msg) => {
     setToast(msg);
@@ -58,7 +69,7 @@ const [newName, setNewName] = useState("");
 
   const loadPersonnel = async () => {
     try {
-      const res = await api.get("/personnel/available");
+      const res = await api.get("/personnel/all");
       const cleanList = (res.data || []).filter(p => p.name && p.name !== "Select Personnel");
       setPersonnelList(cleanList);
     } catch (err) {
@@ -369,16 +380,61 @@ const [newName, setNewName] = useState("");
       {addPersonnelModal && (
   <div style={styles.modalBackdrop}>
     <div style={styles.modalCard}>
-      <div style={styles.modalTitle}>Add Pickup Personnel</div>
+      <div style={styles.modalTitle}>Manage Pickup Personnel</div>
 
-      <input
-        style={styles.modalInput}
-        placeholder="Username (before @ewaste.com)"
-        value={newUsername}
-        onChange={e => setNewUsername(e.target.value)}
-      />
-      <input style={styles.modalInput} value={newEmail} readOnly placeholder="Email" />
-      <input style={styles.modalInput} value={newName} readOnly placeholder="Name" />
+      {/* EXISTING PERSONNEL LIST */}
+      <div style={{ maxHeight: 200, overflowY: "auto", marginBottom: 14 }}>
+        {personnelList.length ? (
+          personnelList.map(p => (
+            <div
+              key={p.id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "8px 10px",
+                borderRadius: 10,
+                background: "var(--bg3)",
+                marginBottom: 6
+              }}
+            >
+              <div>
+                <div style={{ fontWeight: 600 }}>{p.name}</div>
+                <div style={{ fontSize: 12, opacity: 0.7 }}>{p.email}</div>
+              </div>
+
+              <button
+                onClick={() => deletePersonnel(p.id)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#FF7B8A",
+                  fontSize: 18,
+                  cursor: "pointer"
+                }}
+                title="Delete"
+              >
+                ✕
+              </button>
+            </div>
+          ))
+        ) : (
+          <div style={{ opacity: 0.6 }}>No personnel found</div>
+        )}
+      </div>
+
+      <div style={{ borderTop: "1px solid var(--muted)", paddingTop: 12 }}>
+        <div style={{ fontWeight: 600, marginBottom: 6 }}>Add New Personnel</div>
+
+        <input
+          style={styles.modalInput}
+          placeholder="Username (before @ewaste.com)"
+          value={newUsername}
+          onChange={e => setNewUsername(e.target.value)}
+        />
+        <input style={styles.modalInput} value={newEmail} readOnly />
+        <input style={styles.modalInput} value={newName} readOnly />
+      </div>
 
       <div style={styles.modalActions}>
         <button
@@ -388,18 +444,17 @@ const [newName, setNewName] = useState("");
             setNewUsername("");
           }}
         >
-          Cancel
+          Close
         </button>
         <button
           style={styles.btn}
           onClick={async () => {
             if (!newUsername) return showToast("Enter username");
             try {
-              const res = await api.post("/personnel/add", { username: newUsername });
+              await api.post("/personnel/add", { username: newUsername });
               showToast("Personnel added!");
-              setAddPersonnelModal(false);
               setNewUsername("");
-              loadPersonnel(); 
+              loadPersonnel();
             } catch (err) {
               showToast(err.response?.data || "Failed to add personnel");
             }
@@ -411,6 +466,7 @@ const [newName, setNewName] = useState("");
     </div>
   </div>
 )}
+
 
 
     </div>

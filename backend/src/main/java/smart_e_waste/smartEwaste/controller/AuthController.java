@@ -57,7 +57,7 @@ public ResponseEntity<?> login(@RequestBody LoginRequest req) {
     String email = req.getEmail().trim().toLowerCase();
     String password = req.getPassword().trim();
 
-    // Admin login
+   
     if ("admin@ewaste.com".equals(email) && "Admin@123".equals(password)) {
         Map<String, String> res = new HashMap<>();
         res.put("role", "ADMIN");
@@ -67,7 +67,7 @@ public ResponseEntity<?> login(@RequestBody LoginRequest req) {
         return ResponseEntity.ok(res);
     }
 
-    // Personnel login
+    
     Personnel personnel = personnelRepo.findByEmail(email);
     if (personnel != null) {
         String expectedPassword = "Personnel@" + personnel.getName();
@@ -81,11 +81,11 @@ public ResponseEntity<?> login(@RequestBody LoginRequest req) {
         }
     }
 
-    // User login
+ 
     try {
         LoginResponse userResp = auth.login(email, password);
         Map<String, String> res = new HashMap<>();
-        res.put("role", userResp.getRole()); // USER
+        res.put("role", userResp.getRole()); 
         res.put("redirect", "/dashboard");
         res.put("name", userResp.getFullName());
         res.put("email", userResp.getEmail());
@@ -169,8 +169,8 @@ public ResponseEntity<?> getPersonnelRequests(@RequestParam String email) {
     }
 
     List<EwasteRequest> requests =
-            requestRepo.findByPickupPersonnelAndStatus(
-                    p.getName(),    
+            requestRepo.findByPickupPersonnelIdAndStatus(
+                    p.getId(),    
                     "ACCEPTED"     
             );
 

@@ -126,7 +126,6 @@ export default function UserHistory() {
           <span style={st.label}>Location:</span> {r.location}
         </div>
   
-        {/* Rejection reason styled like Dashboard */}
         {r.status === "REJECTED" && r.rejectionReason && (
           <div
             style={{
@@ -254,7 +253,6 @@ const st = {
   },
   
 
-  /* ---------- HEADER ---------- */
   header: {
     display: "flex",
     justifyContent: "space-between",
@@ -317,7 +315,6 @@ const st = {
   statValue: { fontSize: 28, fontWeight: 700 },
   statLabel: { opacity: 0.7, fontSize: 13 },
 
-  /* ---------- FILTER ---------- */
   filterRow: {
     display: "flex",
     gap: 12,
@@ -334,7 +331,6 @@ const st = {
     flex: 1
   },
 
-  /* ---------- SECTIONS ---------- */
   section: {
     marginTop: 28,
     marginBottom: 12,
@@ -342,7 +338,6 @@ const st = {
     fontWeight: 600
   },
 
-  /* ---------- ROWS ---------- */
   rowCard: {
     display: "flex",
     alignItems: "flex-start",

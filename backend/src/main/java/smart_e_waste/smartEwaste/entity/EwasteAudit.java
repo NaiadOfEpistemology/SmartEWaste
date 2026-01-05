@@ -29,6 +29,8 @@ public class EwasteAudit {
     private String rejectionReason;
     @Column(name="pickup_personnel")
     private String pickupPersonnel; 
+    @Column(name="pickup_personnel_id")
+    private Long pickupPersonnelId;
 
 
 }

@@ -111,12 +111,14 @@ public ResponseEntity<?> acceptRequest(
     Personnel personnel = personnelRepo.findById(personnelId).orElse(null);
     if (personnel == null) return ResponseEntity.badRequest().body("Invalid personnel ID");
 
-    long activeCount = requestRepo.countByPickupPersonnelAndStatus(personnel.getName(), "ACCEPTED");
+    long activeCount = requestRepo.countByPickupPersonnelIdAndStatus(personnel.getId(), "ACCEPTED");
+
     if (activeCount >= 3) return ResponseEntity.badRequest().body("Personnel already has 3 active requests");
 
     request.setStatus("ACCEPTED");
     request.setPickupDate(pickupDate + " " + pickupTime);
-    request.setPickupPersonnel(personnel.getName());
+    request.setPickupPersonnelId(personnel.getId());   
+    request.setPickupPersonnel(personnel.getName()); 
     requestRepo.save(request);
 
     emailService.sendAcceptanceEmail(
@@ -168,10 +170,16 @@ public ResponseEntity<?> adminPickup(@PathVariable Long id) {
         Personnel personnel = personnelRepo.findByEmail(personnelEmail.trim().toLowerCase());
         if (personnel == null) return ResponseEntity.badRequest().build();
 
-        List<EwasteRequest> requests = requestRepo.findByPickupPersonnelAndStatus(personnel.getName(), "ACCEPTED");
+        List<EwasteRequest> requests =
+    requestRepo.findByPickupPersonnelIdAndStatus(personnel.getId(), "ACCEPTED");
+
         return ResponseEntity.ok(requests);
     }
-    
+    @GetMapping("/personnel/all")
+public List<Personnel> getAllPersonnel() {
+    return personnelRepo.findAll();
+}
+
 
     @PostMapping("/personnel/pickup/{id}")
 public ResponseEntity<?> personnelPickup(
@@ -189,8 +197,9 @@ public ResponseEntity<?> personnelPickup(
     if (!"ACCEPTED".equals(request.getStatus()))
         return ResponseEntity.badRequest().body("Request is not in ACCEPTED status");
 
-    if (!personnel.getName().equals(request.getPickupPersonnel()))
+    if (!personnel.getId().equals(request.getPickupPersonnelId()))
         return ResponseEntity.badRequest().body("This request is not assigned to you");
+    
 
     return moveToAudit(request, "PICKED_UP", null);
 }
@@ -242,7 +251,9 @@ public ResponseEntity<?> personnelPickup(
         audit.setPickupDate(request.getPickupDate());
         audit.setDate(LocalDate.now().toString());
         audit.setRejectionReason(rejectionReason);
+        audit.setPickupPersonnelId(request.getPickupPersonnelId());
         audit.setPickupPersonnel(request.getPickupPersonnel());
+
 
 
         auditRepo.save(audit);
@@ -255,7 +266,8 @@ public ResponseEntity<?> getPersonnelCompleted(@RequestParam String personnelEma
     Personnel personnel = personnelRepo.findByEmail(personnelEmail.trim().toLowerCase());
     if (personnel == null) return ResponseEntity.badRequest().body("Invalid personnel");
 
-    List<EwasteAudit> completed = auditRepo.findByPickupPersonnelOrderByDateDesc(personnel.getName());
+    List<EwasteAudit> completed = auditRepo.findByPickupPersonnelIdOrderByDateDesc(personnel.getId());
+
 
     return ResponseEntity.ok(completed);
 }
@@ -297,5 +309,14 @@ public ResponseEntity<?> addPersonnel(@RequestBody Map<String, String> body) {
 
     return ResponseEntity.ok(p);
 }
+@DeleteMapping("/personnel/{id}")
+public ResponseEntity<?> deletePersonnel(@PathVariable Long id) {
+    if (!personnelRepo.existsById(id)) {
+        return ResponseEntity.badRequest().body("Personnel not found");
+    }
+    personnelRepo.deleteById(id);
+    return ResponseEntity.ok("Personnel deleted");
+}
+
 
 }
