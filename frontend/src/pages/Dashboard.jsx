@@ -16,6 +16,8 @@ export default function Dashboard() {
   const [rejected, setRejected] = useState([])
   const navigate = useNavigate();
   const [preview, setPreview] = useState("")
+  const [phone, setPhone] = useState("");
+
   const fileRef = useRef(null)
 
   const normalizeRequest = r => {
@@ -73,7 +75,9 @@ export default function Dashboard() {
       .get(`/user/profile?email=${email}`)
       .then(res => {
         if(res.data?.phone) {
-          setForm(f => ({ ...f, contact: res.data.phone }))
+          setPhone(res.data.phone);
+setForm(f => ({ ...f, contact: res.data.phone }));
+
         }
       })
       .catch(() => {})
@@ -128,7 +132,7 @@ export default function Dashboard() {
     fd.append("location", form.location)
     if (form.image) fd.append("image", form.image)
     await api.post("/ewaste/create", fd, { headers: { "Content-Type": "multipart/form-data" } })
-    setForm({ name:"", date:"", type:"", brand:"", model:"", condition:"", quantity:"", remarks:"", description:"", contact:"", location:"", image:null })
+    setForm({ name:"", date:"", type:"", brand:"", model:"", condition:"", quantity:"", remarks:"", description:"", contact:phone, location:"", image:null })
     setPreview("")
     if (fileRef.current) fileRef.current.value = ""
     setShowForm(false)
