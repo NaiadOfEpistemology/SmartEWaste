@@ -49,6 +49,7 @@ public class AuthService {
         u.setEmail(email);
         u.setPassword(encoder.encode(password));
         u.setFullName(req.getFullName());
+        u.setPhone(req.getPhone());
         u.setRole(Role.USER);
 
         String otp=String.valueOf(new Random().nextInt(900000)+100000);

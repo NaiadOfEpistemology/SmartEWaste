@@ -1,0 +1,25 @@
+<div xmlns:th="http://www.thymeleaf.org" style="
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  color: #ffffff;
+  background-color: #30292F;
+  padding: 20px;
+">
+  <p style="font-size:15px; line-height:1.6; margin-bottom:20px;">
+    Your e-waste pickup request has been <strong style="color:#FF7B8A;">rejected</strong>.
+  </p>
+  <div style="
+    margin:18px 0;
+    padding:16px;
+    background:#413F54;
+    border-radius:16px;
+    border:1px solid rgba(222,60,75,0.3);
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  ">
+    <p><strong>Item :</strong> <span th:text="${item}"></span></p>
+    <p><strong>Reason :</strong></p>
+    <p style="opacity:0.85; margin-top:4px;" th:text="${reason}"></p>
+  </div>
+  <p style="font-size:14px; line-height:1.5; opacity:0.85;">
+    You may submit a new request after addressing the issue.
+  </p>
+</div>

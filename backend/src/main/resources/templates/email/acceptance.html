@@ -1,0 +1,58 @@
+<div xmlns:th="http://www.thymeleaf.org" style="
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  color: #ffffff;
+  background-color: #30292F;
+  padding: 20px;
+">
+  <p style="font-size:15px; line-height:1.6; margin-bottom:20px;">
+    Your e-waste pickup request has been
+    <strong style="color:#5F5AA2;">accepted</strong>.
+  </p>
+  <div style="
+    background:#413F54;
+    border-radius:16px;
+    padding:20px;
+    border:1px solid rgba(95,90,162,0.3);
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+    margin-bottom:20px;
+  ">
+    <p style="margin:6px 0;">
+      <strong>Item:</strong>
+      <span th:text="${item}"></span>
+    </p>
+    <p style="margin:6px 0;">
+      <strong>Pickup Date:</strong>
+      <span th:text="${date}"></span>
+    </p>
+    <p style="margin:6px 0;">
+      <strong>Pickup Time:</strong>
+      <span th:text="${time}"></span>
+    </p>
+  </div>
+
+  <div style="
+    background:#413F54;
+    border-radius:16px;
+    padding:18px;
+    border:1px solid rgba(95,90,162,0.3);
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+    margin-bottom:20px;
+  ">
+    <p style="margin:6px 0; font-weight:600;">
+      Assigned Pickup Personnel
+    </p>
+    <p style="margin:6px 0;">
+      <strong>Name:</strong>
+      <span th:text="${personnelName}"></span>
+    </p>
+    <p style="margin:6px 0;">
+      <strong>Email:</strong>
+      <span th:text="${personnelEmail}"></span>
+    </p>
+  </div>
+
+  <p style="font-size:14px; line-height:1.5; opacity:0.85;">
+    Please ensure the item is ready at the specified location on the pickup date.
+    Our personnel will contact you if required.
+  </p>
+</div>

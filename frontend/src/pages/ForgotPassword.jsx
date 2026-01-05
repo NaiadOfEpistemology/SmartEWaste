@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import axios from "../api"
 import { Link, useNavigate } from "react-router-dom"
 
+
 export default function ForgotPassword() {
   const nav = useNavigate()
+  const [theme, setTheme] = useState("dark")
 
   const [email, setEmail] = useState("")
   const [error, setError] = useState("")
@@ -26,10 +28,39 @@ export default function ForgotPassword() {
       setTimeout(() => setShake(false), 400)
     }
   }
+  
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+ 
+
 
   return (
     <div style={styles.page}>
-      <div style={styles.bridgeGlow}></div>
+      <button
+  onClick={toggleTheme}
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    border: "none",
+    background: "var(--c3)",
+    color: "var(--white)",
+    cursor: "pointer",
+    transition: "background-color 0.5s ease, color 0.5s ease"
+  }}
+>
+  {theme === "dark" ? "Light Mode" : "Dark Mode"}
+</button>
+
+      
 
       <style>{`
         @keyframes soft-shake {
@@ -101,7 +132,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    background: "linear-gradient(135deg, var(--c1), var(--c5))",
+    background: "var(--bg1)",
     position: "relative",
     overflow: "hidden",
     fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif"
@@ -132,13 +163,12 @@ const styles = {
     width: "360px",
     padding: "42px 40px",
     borderRadius: "20px",
-    background: "rgba(10,10,25,0.65)",
+    background: "var(--bg2)",
     backdropFilter: "blur(20px)",
-    border: "1px solid rgba(255,255,255,0.18)",
     boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
-    color: "#fff",
+    color: "var(--white)",
     textAlign: "center",
-    transition: "0.25s ease"
+    transition: "background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease"
   },
 
   cardTitle: {
@@ -164,14 +194,15 @@ const styles = {
     padding: "12px 14px",
     borderRadius: "10px",
     border: "1px solid rgba(255,255,255,0.35)",
-    background: "rgba(8,8,20,0.75)",
-    color: "#fff",
+    background: "var(--bg3)",
+    color: "var(--white)",
     fontSize: "15px",
     outline: "none",
     width: "100%",
     maxWidth: "260px",
     margin: "0 auto",
-    display: "block"
+    display: "block",
+    transition: "background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease"
   },
 
   button: {
@@ -182,13 +213,15 @@ const styles = {
     color: "#fff",
     fontWeight: "600",
     fontSize: "16px",
-    cursor: "pointer"
+    cursor: "pointer",
+    transition: "background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease"
   },
 
   switch: {
     marginTop: "18px",
-    color: "#ddd",
-    fontSize: "14px"
+    color: "var(--white)",
+    fontSize: "14px",
+    transition: "color 0.5s ease"
   },
 
   link: {

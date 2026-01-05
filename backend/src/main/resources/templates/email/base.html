@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart E-Waste</title>
+</head>
+<body style="
+  margin:0;
+  padding:0;
+  background-color:#30292F;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+">
+  <div style="
+    max-width:520px;
+    margin:40px auto;
+    background:#413F54;
+    border-radius:20px;
+    padding:32px;
+    box-shadow:0 12px 36px rgba(0,0,0,0.4);
+    color:#ffffff;
+    border:1px solid rgba(95,90,162,0.4);
+  ">
+    <h2 style="
+      margin:0 0 20px 0;
+      color:#5F5AA2;
+      font-weight:700;
+      font-size:22px;
+      letter-spacing:0.5px;
+    " th:text="${title}">
+      Title
+    </h2>
+    <div style="
+      font-size:15px;
+      line-height:1.7;
+      color:rgba(255,255,255,0.85);
+      margin-bottom:28px;
+    " th:utext="${content}">
+      Content
+    </div>
+
+    <div style="text-align:center; margin-bottom:28px;">
+      <a href="#" style="
+        display:inline-block;
+        padding:12px 24px;
+        background:#5F5AA2;
+        color:#fff;
+        font-weight:600;
+        font-size:14px;
+        border-radius:12px;
+        text-decoration:none;
+        box-shadow:0 4px 12px rgba(0,0,0,0.3);
+        transition:all 0.2s ease;
+      " onmouseover="this.style.background='#4942A0';" onmouseout="this.style.background='#5F5AA2';">
+        Take Action
+      </a>
+    </div>
+
+    <div style="
+      font-size:13px;
+      color:rgba(255,255,255,0.65);
+      border-top:1px solid rgba(255,255,255,0.15);
+      padding-top:16px;
+      text-align:center;
+    ">
+      Smart E-Waste App
+    </div>
+  </div>
+</body>
+</html>

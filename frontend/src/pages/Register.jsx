@@ -2,10 +2,12 @@
 import { useState } from "react"
 import axios from "../api"
 import { Link, useNavigate } from "react-router-dom"
+import { useEffect } from "react";
 
 export default function Register(){
 
   const nav = useNavigate()
+  const [theme, setTheme]=useState("dark");
 
   const [fullName,setFullName] = useState("")
   const [email,setEmail] = useState("")
@@ -39,6 +41,10 @@ export default function Register(){
       setTagline("Create your account to access features.")
     }
   }
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+  const toggleTheme = () => setTheme(prev => (prev === "dark" ? "light" : "dark"));
 
   function validatePhone(num){
     const cleaned = num.replace(/\D/g, "")
@@ -58,6 +64,7 @@ export default function Register(){
     setRequirements(req)
     updateCanSubmit(req, isPhoneValid, fullName, email)
   }
+  
 
   function changeField(field,val){
     if(field === "name"){
@@ -97,6 +104,23 @@ export default function Register(){
 
   return (
     <div style={styles.page}>
+  
+    <button 
+      onClick={toggleTheme} 
+      style={{
+        position:"absolute",
+        top:"20px",
+        right:"20px",
+        padding:"6px 10px",
+        borderRadius:"6px",
+        border:"none",
+        background:"var(--c3)",
+        color:"var(--white)",
+        cursor:"pointer"
+      }}
+    >
+      {theme === "dark" ? "Light Mode" : "Dark Mode"}
+    </button>
       <div style={styles.card}>
         <h2 style={styles.cardTitle}>Create Account</h2>
         <p style={styles.tagline}>{tagline}</p>
@@ -178,8 +202,8 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background:"linear-gradient(135deg, var(--c1), var(--c5))",
-    fontFamily:"-apple-system, BlinkMacSystemFont, sans-serif",
+    background:"var(--bg1)",
+    fontFamily:"var(--font-main)",
     padding: "20px"
   },
 
@@ -188,11 +212,11 @@ const styles = {
     maxWidth:"380px",
     padding:"42px 35px",
     borderRadius:"20px",
-    background:"rgba(10,10,25,0.7)",
+    background:"var(--bg2)",       
     backdropFilter:"blur(20px)",
     border:"1px solid rgba(255,255,255,0.14)",
     boxShadow:"0 10px 30px rgba(0,0,0,0.35)",
-    color:"#fff",
+    color:"var(--white)",
     textAlign:"center"
   },
 
@@ -220,8 +244,8 @@ const styles = {
     padding:"12px 14px",
     borderRadius:"10px",
     border:"1px solid rgba(255,255,255,0.35)",
-    background:"rgba(8,8,20,0.75)",
-    color:"#fff",
+    background:"var(--bg3)",       
+    color:"var(--white)",
     fontSize:"15px",
     outline:"none"
   },
@@ -237,7 +261,7 @@ const styles = {
     borderRadius:"10px",
     border:"none",
     background:"var(--c3)",
-    color:"#fff",
+    color:"var(--white)",
     fontWeight:"600",
     fontSize:"16px",
     boxShadow:"0 4px 10px rgba(0,0,0,0.25)"
@@ -245,7 +269,7 @@ const styles = {
 
   switch:{
     marginTop:"22px",
-    color:"#ddd"
+    color:"var(--white)"
   },
 
   link:{

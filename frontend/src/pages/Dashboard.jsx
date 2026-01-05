@@ -226,12 +226,14 @@ export default function Dashboard() {
       )}
 
       <div style={st.statsRow}>
+        
+      <StatCard label="Total Requests" value={pending.length + accepted.length + rejected.length} />
         <StatCard label="Pending" value={pending.length} />
         <StatCard label="Accepted" value={accepted.length} />
         <StatCard label="Rejected" value={rejected.length} />
-        <StatCard label="Total Requests" value={pending.length + accepted.length + rejected.length} />
+        
       </div>
-
+      <div style={st.requestsContainer}>
       <Section title="Pending Requests">
         {pending.length ? pending.map((r, i) => <RequestCard key={i} r={r} />) : <Empty text="No pending requests" />}
       </Section>
@@ -243,6 +245,17 @@ export default function Dashboard() {
       <Section title="Rejected Requests">
         {rejected.length ? rejected.map((r, i) => <RequestCard key={i} r={r} />) : <Empty text="No rejected requests" />}
       </Section>
+      </div>
+      {sidebarOpen && (
+  <div
+    onClick={() => setSidebarOpen(false)}
+    style={{
+      position: "fixed",
+      inset: 0,
+      zIndex: 9998
+    }}
+  />
+)}
 
       <ProfileSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} email={email} refreshProfile={loadProfile} />
     </div>
@@ -250,20 +263,20 @@ export default function Dashboard() {
 }
 
 function StatCard({ label, value }) {
-  const colors = {
-    Pending: st.pending,
-    Accepted: st.accepted,
-    Rejected: st.rejected,
-    "Total Requests": { background: "rgba(255,255,255,0.08)", color: "#fff" }
-  }
-  const style = { ...st.statCard, background: colors[label]?.background || st.statCard.background, color: colors[label]?.color || st.statCard.color }
+  let extra = {}
+
+  if (label === "Pending") extra = st.pending
+  if (label === "Accepted") extra = st.accepted
+  if (label === "Rejected") extra = st.rejected
+
   return (
-    <div style={style}>
+    <div style={{ ...st.statCard, ...extra }}>
       <div style={st.statValue}>{value}</div>
       <div style={st.statLabel}>{label}</div>
     </div>
   )
 }
+
 
 function Section({ title, children }) {
   return (
@@ -292,7 +305,7 @@ function RequestCard({ r }) {
       />
 
       <div style={st.reqCol}>
-        {/* Header */}
+     
         <div style={st.reqHeader}>
           <div style={st.reqTitle}>
             {r.wasteType} • {r.brand} {r.model}
@@ -302,7 +315,7 @@ function RequestCard({ r }) {
           </div>
         </div>
 
-        {/* Meta */}
+        
         <div style={st.metaLine}>
           <span style={st.label}>Pickup:</span> {r.pickupDate || "Not scheduled"}
         </div>
@@ -335,34 +348,46 @@ function RequestCard({ r }) {
     </div>
   )
 }
-
-const st = { page: { minHeight: "100vh", padding: 26, background: "#1E1D24", color: "#fff" }, header: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }, headerRight: { display: "flex", gap: 14, alignItems: "center" }, title: { fontSize: 28, fontWeight: 700 }, reqCol: {
-  flex: 1,
-  display: "flex",
-  flexDirection: "column",
-  gap: 6
-},
-sub: { opacity: 0.7 }, newBtn: { padding: "12px 18px", borderRadius: 14, background: "#5F5AA2", border: "none", color: "#fff", fontWeight: 600, cursor: "pointer" }, userBox: { display: "flex", gap: 12, alignItems: "center", cursor: "pointer" }, avatar: { width: 42, height: 42, borderRadius: "50%", objectFit: "cover" }, name: { fontWeight: 600 }, email: { fontSize: 12, opacity: 0.7 }, statsRow: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 16, marginTop: 24 }, statCard: { padding: 18, borderRadius: 18, background: "rgba(255,255,255,0.08)", textAlign: "center" }, 
-metaLine: {
-  fontSize: 13,
-  opacity: 0.85,
-  lineHeight: 1.4
-},
-label: {
-  opacity: 0.6,
-  marginRight: 4
-},
-thumb: {
-  width: 80,
-  height: 80,
-  borderRadius: 14,
-  objectFit: "cover"
-},
-statValue: { fontSize: 30, fontWeight: 700 }, statLabel: { opacity: 0.7 }, formCard: { marginTop: 24, padding: 24, borderRadius: 20, background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)" }, input: { height: 42, borderRadius: 10, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", padding: "0 12px" }, textarea: { marginTop: 12, minHeight: 70, borderRadius: 12, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", color: "#fff", padding: 12 }, submitBig: { padding: "14px 32px", borderRadius: 16, background: "#5F5AA2", border: "none", color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer" }, formSection: { marginBottom: 26 }, formTitle: { fontSize: 15, fontWeight: 600, marginBottom: 12, opacity: 0.85 }, grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }, uploadBox: { height: 120, borderRadius: 16, border: "2px dashed rgba(255,255,255,0.35)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "rgba(255,255,255,0.04)" }, uploadText: { textAlign: "center", fontSize: 14 }, previewLarge: { marginTop: 14, width: 160, height: 160, borderRadius: 16, objectFit: "cover" }, formActions: { display: "flex", justifyContent: "center", marginTop: 10 }, toast: { position: "fixed", bottom: 28, right: 28, padding: "14px 20px", borderRadius: 14, background: "#5F5AA2", color: "#0f2f24", fontWeight: 600, boxShadow: "0 12px 30px rgba(0,0,0,0.35)", zIndex: 999 }, reqCard: { display: "flex", gap: 16, padding: 16, borderRadius: 18, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.18", backdropFilter: "blur(14px)", flexWrap:"wrap" }, reqHeader: {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: 12,
-  flexWrap: "wrap"
-},
-reqRow: { display: "flex", justifyContent: "space-between" }, reqTitle: { fontWeight: 700, fontSize: 15 }, line: { opacity: 0.75, fontSize: 13 }, badge: { padding: "4px 10px", borderRadius: 999, fontSize: 12, fontWeight: 700 }, pending: { background: "rgba(255,200,0,0.25)", color: "#FFD166" }, accepted: { background: "rgba(54,196,113,0.25)", color: "#38D39F" }, rejected: { background: "rgba(222,60,75,0.25)", color: "#FF7B8A" }, pickedup: { background: "rgba(95,170,255,0.25)", color: "#82BDFF" }, sectionTitle: { fontSize: 18, fontWeight: 600 }, list: { display: "flex", flexDirection: "column", gap: 14 }, empty: { opacity: 0.6, marginTop: 8 } }
+const st = {
+  page: { minHeight: "100vh", padding: 26, background: "var(--bg1)", color: "var(--white)" },
+  header: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" },
+  headerRight: { display: "flex", gap: 14, alignItems: "center" },
+  title: { fontSize: 28, fontWeight: 700 },
+  sub: { opacity: 0.7 },
+  newBtn: { padding: "12px 18px", borderRadius: 14, background: "var(--accent)", border: "none", color: "#fff", fontWeight: 600, cursor: "pointer" },
+  userBox: { display: "flex", gap: 12, alignItems: "center", cursor: "pointer" },
+  avatar: { width: 42, height: 42, borderRadius: "50%", objectFit: "cover" },
+  name: { fontWeight: 600 },
+  email: { fontSize: 12, opacity: 0.7 },
+  statsRow: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 16, marginTop: 24 },
+  statCard: { padding: 18, borderRadius: 18, background: "var(--bg2)", color:"var(--white)",textAlign: "center" },
+  statValue: { fontSize: 30, fontWeight: 700 },
+  statLabel: { opacity: 0.7 },
+  formCard: { marginTop: 24, padding: 24, borderRadius: 20, background: "var(--bg2)", border: "1px solid var(--muted)" },
+  input: { height: 42, borderRadius: 10, background: "var(--bg3)", border: "1px solid var(--muted)", color: "var(--white)", padding: "0 12px" },
+  textarea: { marginTop: 12, minHeight: 70, borderRadius: 12, background: "var(--bg3)", border: "1px solid var(--muted)", color: "var(--white)", padding: 12 },
+  submitBig: { padding: "14px 32px", borderRadius: 16, background: "var(--accent)", border: "none", color: "var(--white)", fontWeight: 700, fontSize: 15, cursor: "pointer" },
+  formSection: { marginBottom: 26 },
+  formTitle: { fontSize: 15, fontWeight: 600, marginBottom: 12, opacity: 0.85 },
+  grid2: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
+  uploadBox: { height: 120, borderRadius: 16, border: "2px dashed var(--muted)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", background: "var(--bg2)" },
+  uploadText: { textAlign: "center", fontSize: 14 },
+  previewLarge: { marginTop: 14, width: 160, height: 160, borderRadius: 16, objectFit: "cover" },
+  formActions: { display: "flex", justifyContent: "center", marginTop: 10 },
+  toast: { position: "fixed", bottom: 28, right: 28, padding: "14px 20px", borderRadius: 14, background: "var(--bg2)", color: "var(--white)", fontWeight: 600, border:"1px solid var(--bg3)",boxShadow: "0 12px 30px rgba(0,0,0,0.2)", zIndex: 999 },
+  reqCard: { display: "flex", gap: 16, padding: 16, borderRadius: 18, background: "var(--bg2)", border: "1px solid var(--muted)", backdropFilter: "blur(14px)", flexWrap:"wrap" },
+  reqCol: { flex: 1, display: "flex", flexDirection: "column", gap: 6 },
+  reqHeader: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" },
+  reqTitle: { fontWeight: 700, fontSize: 15 },
+  metaLine: { fontSize: 13, opacity: 0.85, lineHeight: 1.4 },
+  label: { opacity: 0.6, marginRight: 4 },
+  thumb: { width: 80, height: 80, borderRadius: 14, objectFit: "cover" },
+  badge: { padding: "4px 10px", borderRadius: 999, fontSize: 12, fontWeight: 700 },
+  pending: { background: "rgba(255,200,0,0.25)", color: "#FFD166" },
+  accepted: { background: "rgba(54,196,113,0.25)", color: "#38D39F" },
+  rejected: { background: "rgba(222,60,75,0.25)", color: "#FF7B8A" },
+  pickedup: { background: "rgba(95,170,255,0.25)", color: "#82BDFF" },
+  sectionTitle: { fontSize: 18, fontWeight: 600 },
+  list: { display: "flex", flexDirection: "column", gap: 14 },
+  empty: { opacity: 0.6, marginTop: 8 }
+}

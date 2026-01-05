@@ -45,6 +45,18 @@ export default function LandingPage() {
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState("dark");
+  
+
+const toggleTheme = () => {
+  const newTheme = theme === "dark" ? "light" : "dark";
+  setTheme(newTheme);
+  document.documentElement.setAttribute("data-theme", newTheme);
+};
+useEffect(() => {
+  document.documentElement.setAttribute("data-theme", theme);
+}, [theme]); 
+
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,14 +73,16 @@ export default function LandingPage() {
 
   return (
     <div
-      style={{
-        fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif",
-        background: "var(--bg1)",
-        color: "var(--white)",
-        minHeight: "100vh",
-        overflowX: "hidden",
-      }}
-    >
+  style={{
+    fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif",
+    background: "var(--bg1)",
+    color: "var(--white)",
+    minHeight: "100vh",
+    overflowX: "hidden",
+    transition: "background-color 0.5s ease, color 0.5s ease",
+  }}
+>
+
       <nav
         style={{
           width: "100%",
@@ -78,9 +92,11 @@ export default function LandingPage() {
           alignItems: "center",
           position: "fixed",
           top: 0,
-          background: "rgba(14,14,20,0.88)",
-          backdropFilter: "blur(14px)",
-          borderBottom: "1px solid rgba(255,255,255,0.12)",
+          background: "var(--bg2)",
+backdropFilter: "blur(20px)",
+borderBottom: "1px solid var(--muted)",
+transition: "background-color 0.5s ease, border-color 0.5s ease",
+
           zIndex: 1000,
         }}
       >
@@ -116,6 +132,20 @@ export default function LandingPage() {
             <button style={btn} onClick={() => scrollToId("dosdonts")}>Do's & Dont's</button>
             <button style={btn} onClick={() => scrollToId("contact")}>Contact</button>
             <a href="/login" style={loginBtn}>Login</a>
+            <button
+    onClick={toggleTheme}
+    style={{
+      padding: "6px 10px",
+      borderRadius: "6px",
+      border: "none",
+      background: "var(--c3)",
+      color: "var(--white)",
+      cursor: "pointer",
+      fontSize: 13,
+    }}
+  >
+    {theme === "dark" ? "Light Mode" : "Dark Mode"}
+  </button>
           </div>
 
           <div
@@ -183,6 +213,8 @@ export default function LandingPage() {
           textAlign: "center",
           fontSize: 12,
           color: "var(--muted)",
+transition: "color 0.5s ease",
+
         }}
       >
         © {new Date().getFullYear()} Smart E-Waste App
@@ -204,45 +236,50 @@ const btn = {
   cursor: "pointer",
   padding: 0,
   fontSize: 14,
-  opacity: 0.82,
+  opacity: 0.85,
+  transition: "color 0.5s ease",
 };
+
 
 const loginBtn = {
   padding: "9px 18px",
   borderRadius: 999,
-  border: "1px solid rgba(255,255,255,0.18)",
+  border: "1px solid var(--muted)",
   textDecoration: "none",
   color: "var(--white)",
   fontWeight: 600,
   fontSize: 14,
+  transition: "background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease",
 };
+
 
 const mobileBtn = {
   background: "transparent",
   border: "none",
-  color: "white",
+  color: "var(--white)",
   fontSize: 18,
   cursor: "pointer",
+  transition: "color 0.5s ease",
 };
 
-// -------------------------
-// Hero Section
-// -------------------------
+
 function HeroSection({ heroImages, activeSlide }) {
   return (
     <section
-      id="hero"
-      style={{
-        padding: "90px 6% 90px",
-        display: "flex",
-        flexWrap: "wrap",
-        gap: "40px",
-        alignItems: "center",
-        justifyContent: "space-between",
-        maxWidth: "1200px",
-        margin: "0 auto",
-      }}
-    >
+  id="hero"
+  style={{
+    padding: "90px 6% 90px",
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "40px",
+    alignItems: "center",
+    justifyContent: "space-between",
+    maxWidth: "1200px",
+    margin: "0 auto",
+    transition: "background-color 0.5s ease, color 0.5s ease",
+  }}
+>
+
       <div style={{ flex: "1 1 420px" }}>
         <div
           style={{
@@ -336,9 +373,12 @@ function HeroSection({ heroImages, activeSlide }) {
             maxWidth: "480px",
             borderRadius: 22,
             padding: 12,
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.16)",
-            boxShadow: "0 18px 40px rgba(0,0,0,0.45)",
+            background: "var(--bg2)",
+border: "1px solid var(--muted)",
+boxShadow: "0 18px 40px rgba(0,0,0,0.35)",
+backdropFilter: "blur(20px)",
+transition: "background-color 0.5s ease, border-color 0.5s ease",
+
           }}
         >
           <div
@@ -458,11 +498,13 @@ function FlipCard({ title, front, back }) {
       style={{
         borderRadius: 16,
         padding: 18,
-        background: "rgba(255,255,255,0.05)",
-        border: "1px solid rgba(255,255,255,0.18)",
+        background: "var(--bg3)",
+border: "1px solid var(--muted)",
+transition: "background-color 0.5s ease, border-color 0.5s ease",
+
         boxShadow: "0 10px 26px rgba(0,0,0,0.4)",
         minHeight: 150,
-        transition: "0.3s"
+        
       }}
     >
       <h3 style={{ fontSize: 17, fontWeight: 600, marginBottom: 10 }}>{title}</h3>
@@ -504,8 +546,10 @@ function ServiceCard({ title, text }) {
     <div style={{
       padding: 22,
       borderRadius: 16,
-      background: "rgba(255,255,255,0.06)",
-      border: "1px solid rgba(255,255,255,0.18)"
+      background: "var(--bg3)",
+border: "1px solid var(--muted)",
+transition: "background-color 0.5s ease, border-color 0.5s ease",
+
     }}>
       <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{title}</h3>
       <p style={{ opacity: 0.9 }}>{text}</p>
@@ -539,7 +583,7 @@ function DosDontsSection() {
           "Encourage others to dispose responsibly"
         ]} />
 
-        <DosDontCard title="Don'ts" items={[
+        <DosDontCard title="Dont's" items={[
           "Don’t burn electronics",
           "Don’t dump with regular trash",
           "Don’t sell to unverified dealers",
@@ -557,8 +601,10 @@ function DosDontCard({ title, items }) {
     <div style={{
       padding: 22,
       borderRadius: 16,
-      background: "rgba(255,255,255,0.04)",
-      border: "1px solid rgba(255,255,255,0.16)"
+      background: "var(--bg3)",
+border: "1px solid var(--muted)",
+transition: "background-color 0.5s ease, border-color 0.5s ease",
+
     }}>
       <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 10 }}>{title}</h3>
       <ul style={{
@@ -595,8 +641,10 @@ function ContactSection() {
         margin: "0 auto",
         padding: 28,
         borderRadius: 18,
-        background: "rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.18)"
+        background: "var(--bg3)",
+border: "1px solid var(--muted)",
+transition: "background-color 0.5s ease, border-color 0.5s ease",
+
       }}>
         <p><strong>Email:</strong> support@ewaste.com</p>
         <p><strong>Phone:</strong> +91 84669 93344</p>
