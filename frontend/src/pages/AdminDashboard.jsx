@@ -42,6 +42,32 @@ const [newName, setNewName] = useState("");
 
 
   const navigate = useNavigate();
+  const normalizeAdminRequest = (r) => {
+    let brand = r.brand || "";
+    let model = r.model || "";
+  
+    if (!brand && !model && r.description) {
+      const match = r.description.match(/- ([^\s]+) ([^\s]+)\./);
+      if (match) {
+        brand = match[1];
+        model = match[2];
+      }
+    }
+  
+    return {
+      ...r,
+      wasteType: r.wasteType || "Unknown",
+      brand: brand || "—",
+      model: model || "",
+      quantity: r.quantity > 0 ? r.quantity : 1,
+      pickupDate: r.pickupDate || "Not set",
+      location: r.location || "—",
+      contact: r.contact || r.contactNumber || "—",
+      status: r.status?.toUpperCase() || "PENDING",
+      rejectionReason: r.rejectionReason || "",
+    };
+  };
+  
   const deletePersonnel = async (id) => {
     if (!window.confirm("Delete this personnel?")) return;
     try {
@@ -84,7 +110,8 @@ const [newName, setNewName] = useState("");
       const all = [
         ...(res.data.pending || []),
         ...(res.data.completed || [])
-      ];
+      ].map(normalizeAdminRequest);
+      
       const groups = splitRequests(all);
       setPendingRequests(groups.pending);
       setAcceptedRequests(groups.accepted); 
@@ -148,10 +175,9 @@ const [newName, setNewName] = useState("");
           <div style={{ ...styles.badge, ...styles[r.status.toLowerCase()] }}>{r.status}</div>
         </div>
         <div style={styles.meta}>
-          <span style={styles.label}>Qty:</span> {r.quantity || 1}
-          <span style={styles.dot}>•</span>
-          <span style={styles.label}>Condition:</span> {r.condition}
+          <span style={styles.label}>Qty:</span> {r.quantity}
         </div>
+
         <div style={styles.meta}>
           <span style={styles.label}>Pickup:</span> {r.pickupDate || "Not set"}
         </div>
@@ -276,11 +302,17 @@ const [newName, setNewName] = useState("");
       </div>
 
       <div style={styles.requestsContainer}>
-        {Object.entries(sections).map(([title, list]) => (
-          <Section key={title} title={title}>
-            {list.length ? list.map(r => <RequestCard key={r.id} r={r} />) : <Empty text={`No ${title.toLowerCase()}`} />}
-          </Section>
-        ))}
+      {Object.entries(sections).map(([title, list]) => (
+  <Section key={title} title={title}>
+    {list.length
+      ? list.slice(0, 5).map(r => (
+          <RequestCard key={r.id} r={r} />
+        ))
+      : <Empty text={`No ${title.toLowerCase()}`} />
+    }
+  </Section>
+))}
+
       </div>
 
       {previewRequest && (

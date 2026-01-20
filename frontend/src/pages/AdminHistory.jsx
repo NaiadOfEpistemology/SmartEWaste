@@ -16,7 +16,40 @@ export default function AdminHistory() {
 
   const adminEmail = localStorage.getItem("email");
   const navigate = useNavigate();
+  const ITEMS_PER_PAGE = 5;
 
+const [page, setPage] = useState({
+  Pending: 1,
+  Accepted: 1,
+  Rejected: 1
+});
+
+  const normalizeAdminHistoryRequest = (r) => {
+    let brand = r.brand || "";
+    let model = r.model || "";
+  
+    if (!brand && !model && r.description) {
+      const match = r.description.match(/- ([^\s]+) ([^\s]+)\./);
+      if (match) {
+        brand = match[1];
+        model = match[2];
+      }
+    }
+  
+    return {
+      ...r,
+      wasteType: r.wasteType || "Unknown",
+      brand: brand || "—",
+      model: model || "",
+      quantity: r.quantity > 0 ? r.quantity : 1,
+      pickupDate: r.pickupDate || "",
+      location: r.location || "—",
+      contact: r.contact || r.contactNumber || "—",
+      status: r.status?.toUpperCase() || "PENDING",
+      rejectionReason: r.rejectionReason || "",
+    };
+  };
+  
   function splitRequests(all) {
     return {
       pending: all.filter(r => r.status === "PENDING"),
@@ -28,7 +61,9 @@ export default function AdminHistory() {
   async function loadHistory() {
     try {
       const res = await api.get("/admin/history");
-      const all = [...(res.data.pending || []), ...(res.data.completed || [])];
+      const all = [...(res.data.pending || []), ...(res.data.completed || [])]
+  .map(normalizeAdminHistoryRequest);
+
       const groups = splitRequests(all);
       setPending(groups.pending);
       setAccepted(groups.accepted);
@@ -45,6 +80,11 @@ export default function AdminHistory() {
     if (to && d > to) return false;
     return true;
   });
+  const paginate = (arr, pageNum) => {
+    const start = (pageNum - 1) * ITEMS_PER_PAGE;
+    return arr.slice(start, start + ITEMS_PER_PAGE);
+  };
+  
 
   const metrics = useMemo(() => ({
     "Total Requests": pending.length + accepted.length + rejected.length,
@@ -83,11 +123,17 @@ export default function AdminHistory() {
       />
       <div style={styles.col}>
         <div style={styles.rowHeader}>
-          <div style={styles.name}>{r.wasteType}</div>
+        <div style={styles.name}>
+  {r.wasteType} • {r.brand}{r.model ? ` ${r.model}` : ""}
+</div>
+
           <div style={{ ...styles.badge, ...styles[r.status.toLowerCase()] }}>{r.status.replace("_"," ")}</div>
         </div>
         <div style={styles.meta}><span style={styles.label}>User:</span>{r.email}</div>
-        <div style={styles.meta}><span style={styles.label}>Condition:</span>{r.condition || "Unknown"} • <span style={styles.label}>Qty:</span>{r.quantity}</div>
+        <div style={styles.meta}>
+  <span style={styles.label}>Qty:</span>{r.quantity}
+</div>
+
         {r.pickupDate && <div style={styles.meta}><span style={styles.label}>Pickup:</span>{r.pickupDate}</div>}
         <div style={styles.meta}><span style={styles.label}>Contact:</span>{r.contact}</div>
         <div style={styles.meta}><span style={styles.label}>Location:</span>{r.location}</div>
@@ -104,15 +150,51 @@ export default function AdminHistory() {
 
   const Section = ({ title, data }) => {
     const list = filtered(data);
+    const currentPage = page[title] || 1;
+    const totalPages = Math.ceil(list.length / ITEMS_PER_PAGE);
+    const pagedList = paginate(list, currentPage);
+  
     return (
       <div style={{ marginTop: 30 }}>
         <div style={styles.sectionTitle}>{title}</div>
+  
         <div style={styles.list}>
-          {list.length ? list.map((r,i) => <Row key={i} r={r} />) : <div style={styles.empty}>No {title.toLowerCase()} requests</div>}
+          {pagedList.length ? (
+            pagedList.map((r, i) => <Row key={i} r={r} />)
+          ) : (
+            <div style={styles.empty}>No {title.toLowerCase()} requests</div>
+          )}
         </div>
+  
+        {totalPages > 1 && (
+          <div style={styles.pagination}>
+            <button
+              disabled={currentPage === 1}
+              onClick={() =>
+                setPage(p => ({ ...p, [title]: currentPage - 1 }))
+              }
+            >
+              Prev
+            </button>
+  
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+  
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() =>
+                setPage(p => ({ ...p, [title]: currentPage + 1 }))
+              }
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     );
   };
+  
 
   return (
     <div style={styles.page}>
@@ -192,6 +274,13 @@ const styles = {
     flexWrap: "wrap",
     cursor: "pointer"
   },
+  pagination: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 12
+  },  
   
   rowHeader: { display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap" },
   badge: { padding:"4px 10px", borderRadius:999, fontSize:12, fontWeight:700 },

@@ -92,22 +92,45 @@ setForm(f => ({ ...f, contact: res.data.phone }));
     try {
       const pendingRes = await api.get("/ewaste/my-requests", { params: { email } });
       const pendingAll = pendingRes.data || [];
+  
       const historyRes = await api.get("/requests/history", { params: { email } });
       const history = historyRes.data || { pending: [], completed: [] };
+  
       const normalize = str => str?.toUpperCase?.() || "";
-      setPending(pendingAll.filter(r => normalize(r.status) === "PENDING").map(normalizeRequest));
-      setAccepted([
-        ...pendingAll.filter(r => ["ACCEPTED", "PICKED_UP"].includes(normalize(r.status))),
-        ...history.completed.filter(r => ["ACCEPTED", "PICKED_UP"].includes(normalize(r.status)))
-      ].map(normalizeRequest));
-      setRejected([
-        ...pendingAll.filter(r => normalize(r.status) === "REJECTED"),
-        ...history.completed.filter(r => normalize(r.status) === "REJECTED")
-      ].map(normalizeRequest));
+  
+      setPending(
+        pendingAll
+          .filter(r => normalize(r.status) === "PENDING")
+          .map(normalizeRequest)
+          .slice(0, 5) 
+      );
+  
+      setAccepted(
+        [
+          ...pendingAll.filter(r =>
+            ["ACCEPTED", "PICKED_UP"].includes(normalize(r.status))
+          ),
+          ...history.completed.filter(r =>
+            ["ACCEPTED", "PICKED_UP"].includes(normalize(r.status))
+          )
+        ]
+          .map(normalizeRequest)
+          .slice(0, 5) 
+      );
+  
+      setRejected(
+        [
+          ...pendingAll.filter(r => normalize(r.status) === "REJECTED"),
+          ...history.completed.filter(r => normalize(r.status) === "REJECTED")
+        ]
+          .map(normalizeRequest)
+          .slice(0, 5) 
+      );
     } catch (err) {
       console.error("Error loading requests", err);
     }
-  }
+  };
+  
 
   const handleFile = e => {
     const file = e.target.files[0]

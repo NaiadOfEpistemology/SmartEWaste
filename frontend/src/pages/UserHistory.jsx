@@ -16,6 +16,14 @@ export default function UserHistory() {
   const [customDate, setCustomDate] = useState("");
 
   const norm = (d) => (d ? d.slice(0, 10) : null);
+  const PAGE_SIZE = 5;
+
+const [page, setPage] = useState({
+  pending: 1,
+  accepted: 1,
+  rejected: 1,
+});
+
 
   const applyDateFilter = (list) => {
     if (!dateFilter) return list;
@@ -56,6 +64,42 @@ export default function UserHistory() {
 
     return list;
   };
+  const paginate = (list, section) => {
+    const currentPage = page[section];
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return list.slice(start, start + PAGE_SIZE);
+  };
+  
+  const totalPages = (list) =>
+    Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  
+  const normalizeRequest = (r) => {
+    let brand = r.brand || "";
+    let model = r.model || "";
+    if ((!brand || !model) && r.description) {
+      const match = r.description.match(/- ([^\s]+) ([^\s]+)\./);
+      if (match) {
+        brand = brand || match[1];
+        model = model || match[2];
+      }
+    }
+  
+    return {
+      ...r,
+      wasteType: r.wasteType || "Unknown",
+      brand: brand || "—",
+      model: model || "",
+      quantity: r.quantity > 0 ? r.quantity : 1,
+      condition: r.condition || "—",
+      pickupDate: r.pickupDate || "Not set",
+      location: r.location || "—",
+      contact: r.contact || r.contactNumber || "—",
+      image: r.image || "",
+      status: r.status?.toUpperCase() || "PENDING",
+      rejectionReason: r.rejectionReason || "",
+    };
+  };
+  
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -63,11 +107,8 @@ export default function UserHistory() {
       const combined = [
         ...(res.data.pending || []),
         ...(res.data.completed || []),
-      ].map((r) => ({
-        ...r,
-        status: r.status?.toUpperCase() || "PENDING",
-        rejectionReason: r.rejectionReason || "",
-      }));
+      ].map(normalizeRequest);
+      
 
       setPending(combined.filter((r) => r.status === "PENDING"));
       setAccepted(
@@ -109,14 +150,14 @@ export default function UserHistory() {
   
       <div style={st.col}>
         <div style={st.name}>
-          {r.wasteType} • {r.brand} {r.model}
+        {r.wasteType} • {r.brand}{r.model ? ` ${r.model}` : ""}
+
         </div>
   
         <div style={st.meta}>
           <span style={st.label}>Qty:</span> {r.quantity || 1}
-          <span style={st.dot}>•</span>
-          <span style={st.label}>Condition:</span> {r.condition}
         </div>
+
   
         <div style={st.meta}>
           <span style={st.label}>Pickup:</span> {r.pickupDate || "Not set"}
@@ -141,6 +182,49 @@ export default function UserHistory() {
       </div>
     </div>
   );
+  const Pagination = ({ section, list }) => {
+    const currentPage = page[section];
+    const pages = totalPages(list);
+  
+    if (pages <= 1) return null;
+  
+    return (
+      <div style={st.pagination}>
+        <button
+          style={{
+            ...st.pageBtn,
+            opacity: currentPage === 1 ? 0.4 : 1,
+            cursor: currentPage === 1 ? "not-allowed" : "pointer"
+          }}
+          disabled={currentPage === 1}
+          onClick={() =>
+            setPage(p => ({ ...p, [section]: currentPage - 1 }))
+          }
+        >
+          Prev
+        </button>
+  
+        <span style={{ opacity: 0.7 }}>
+          Page {currentPage} of {pages}
+        </span>
+  
+        <button
+          style={{
+            ...st.pageBtn,
+            opacity: currentPage === pages ? 0.4 : 1,
+            cursor: currentPage === pages ? "not-allowed" : "pointer"
+          }}
+          disabled={currentPage === pages}
+          onClick={() =>
+            setPage(p => ({ ...p, [section]: currentPage + 1 }))
+          }
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+  
   
 
   const metricColors = {
@@ -203,26 +287,46 @@ export default function UserHistory() {
         )}
       </div>
 
-      <div style={st.section}>Pending</div>
-      {applyDateFilter(pending).length === 0 ? (
-        <div style={st.empty}>No pending requests</div>
-      ) : (
-        applyDateFilter(pending).map((r, i) => <Row r={r} key={i} />)
-      )}
+{/* PENDING */}
+<div style={st.section}>Pending</div>
+{applyDateFilter(pending).length === 0 ? (
+  <div style={st.empty}>No pending requests</div>
+) : (
+  <>
+    {paginate(applyDateFilter(pending), "pending").map((r, i) => (
+      <Row r={r} key={i} />
+    ))}
+    <Pagination section="pending" list={applyDateFilter(pending)} />
+  </>
+)}
 
-      <div style={st.section}>Accepted</div>
-      {applyDateFilter(accepted).length === 0 ? (
-        <div style={st.empty}>No accepted requests</div>
-      ) : (
-        applyDateFilter(accepted).map((r, i) => <Row r={r} key={i} />)
-      )}
+{/* ACCEPTED */}
+<div style={st.section}>Accepted</div>
+{applyDateFilter(accepted).length === 0 ? (
+  <div style={st.empty}>No accepted requests</div>
+) : (
+  <>
+    {paginate(applyDateFilter(accepted), "accepted").map((r, i) => (
+      <Row r={r} key={i} />
+    ))}
+    <Pagination section="accepted" list={applyDateFilter(accepted)} />
+  </>
+)}
 
-      <div style={st.section}>Rejected</div>
-      {applyDateFilter(rejected).length === 0 ? (
-        <div style={st.empty}>No rejected requests</div>
-      ) : (
-        applyDateFilter(rejected).map((r, i) => <Row r={r} key={i} />)
-      )}
+{/* REJECTED */}
+<div style={st.section}>Rejected</div>
+{applyDateFilter(rejected).length === 0 ? (
+  <div style={st.empty}>No rejected requests</div>
+) : (
+  <>
+    {paginate(applyDateFilter(rejected), "rejected").map((r, i) => (
+      <Row r={r} key={i} />
+    ))}
+    <Pagination section="rejected" list={applyDateFilter(rejected)} />
+  </>
+)}
+
+
       {sidebarOpen && (
   <div
     onClick={() => setSidebarOpen(false)}
@@ -404,5 +508,23 @@ const st = {
   empty: {
     opacity: 0.6,
     marginBottom: 10
+  },
+  pagination: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 14,
+    marginBottom: 20,
+    marginTop: 6
+  },
+  
+  pageBtn: {
+    padding: "8px 16px",
+    borderRadius: 14,
+    background: "var(--accent)",
+    border: "none",
+    color: "var(--white)",
+    fontWeight: 600
   }
+  
 }
