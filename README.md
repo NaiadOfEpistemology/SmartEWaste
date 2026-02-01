@@ -1,6 +1,6 @@
 # **SmartEwaste – Full Stack Project**
 
-A **rough first version** full-stack **E-Waste Collection & Management System** built using:
+A full-stack **E-Waste Collection & Management System** built using:
 
 - **Spring Boot (Backend)**
 - **React + Vite (Frontend)**
