@@ -31,7 +31,7 @@ vite.config.js
 Open your terminal and run :
 
 ```sh
-git clone https://github.com/NaiadOfEpistemology/infy-java-project.git
+[git clone https://github.com/NaiadOfEpistemology/infy-java-project.git](https://github.com/NaiadOfEpistemology/SmartEWaste.git)
 cd SmartEwasteProject
 ```
 You will now see :
